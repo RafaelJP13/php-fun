@@ -1,38 +1,57 @@
-<?php
+<?php 
 
-class Bank
+abstract class BankAccount
 {
-    private float $balance = 0;
-    protected int $withdrawalsCount = 0;
-    public string $bankName = 'Caixa Economica Federal';
+
+    private float $balance = 1000;
+    protected int $countPixWithdrawals = 0;
+    protected int $countATMWithDrawals = 0;
+
+    public function deposit(float $amount): void 
+    {
+        $this->balance = $amount;
+    }
 
     public function getBalance(): float
     {
         return $this->balance;
     }
 
+    abstract public function withdrawal(float $amount): void;
 }
 
-class Withdrawal extends Bank
+class PixWithdrawal extends BankAccount
 {
+    private int $limitPixWithdrawals = 5;
 
-    public function getWithdrawalsCount(): int 
+    private function countPixWithdrawals(): bool
     {
-        return $this->withdrawalsCount;
+        return $this->countPixWithdrawals <= $this->limitPixWithdrawals;
     }
 
-    // public function getBalanceFromChildClass(): float
-    // {
-    //     return $this->balance;
-    // }
-
+    public function withdrawal(float $amount): void
+    {
+        echo $this->countPixWithdrawals() && $amount < $this->getBalance() ?
+        "Saque em PIX realizado com sucesso!" : 
+        "Saldo insuficiente ou limite de saques por PIX excedido!";
+    }
 }
 
-$firstAccount = new Bank;
-echo "Valor disponível: {$firstAccount->getBalance()}";
+class Atmwithdrawal extends BankAccount
+{
+    
+    public function withdrawal(float $amount): void
+    {
+        echo $amount < $this->getBalance() ? 
+        "Saque via Caixa Eletronico realizado com sucesso!" :
+        "Saldo insuficiente!";
+    }
+}
+
+$pixWithdrawal = new PixWithdrawal;
+$pixWithdrawal->withdrawal(520.35);
 echo PHP_EOL;
-$firstWithdrawal = new Withdrawal;
-echo "Quantidade de saques: {$firstWithdrawal->getWithdrawalsCount()}";
-echo PHP_EOL;
-// echo $firstWithdrawal->getBalanceFromChildClass(); Impossivel!!!
-echo "Nome do banco: {$firstAccount->bankName}";
+
+$atmWithdrawal = new Atmwithdrawal;
+$atmWithdrawal->withdrawal(250.0);
+
