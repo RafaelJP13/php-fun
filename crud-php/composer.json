@@ -1,0 +1,8 @@
+{
+    "name": "rafae/crud-php",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
