@@ -4,17 +4,21 @@ abstract class BankAccount
 {
 
     private float $balance = 1000;
-    protected int $countPixWithdrawals = 0;
     protected int $countATMWithDrawals = 0;
 
     public function deposit(float $amount): void 
     {
-        $this->balance = $amount;
+        $this->balance += $amount;
     }
 
     public function getBalance(): float
     {
         return $this->balance;
+    }
+
+    public function decreaseBalance(float $amount): void
+    {
+        $this->balance -= $amount;
     }
 
     abstract public function withdrawal(float $amount): void;
@@ -23,35 +27,41 @@ abstract class BankAccount
 class PixWithdrawal extends BankAccount
 {
     private int $limitPixWithdrawals = 5;
+    private int $countPixWithdrawals = 0;
 
     private function countPixWithdrawals(): bool
     {
-        return $this->countPixWithdrawals <= $this->limitPixWithdrawals;
+        return $this->countPixWithdrawals < $this->limitPixWithdrawals;
     }
 
     public function withdrawal(float $amount): void
     {
-        echo $this->countPixWithdrawals() && $amount < $this->getBalance() ?
-        "Saque em PIX realizado com sucesso!" : 
-        "Saldo insuficiente ou limite de saques por PIX excedido!";
+        if($this->countPixWithdrawals() && $amount < $this->getBalance())
+        {
+            $this->decreaseBalance($amount);
+            $this->countPixWithdrawals += 1;
+            echo "Saque em PIX realizado com sucesso!\nSaldo Atual: R$ {$this->getBalance()}\n";
+        }
+        else{
+            echo "Saldo insuficiente ou limite de saques por PIX excedido!\nSaldo Atual: R$ {$this->getBalance()}\n";
+        }
     }
 }
 
-class Atmwithdrawal extends BankAccount
+class AtmWithdrawal extends BankAccount
 {
-    
     public function withdrawal(float $amount): void
     {
-        echo $amount < $this->getBalance() ? 
-        "Saque via Caixa Eletronico realizado com sucesso!" :
-        "Saldo insuficiente!";
+        if($amount < $this->getBalance())
+        {
+            $this->decreaseBalance($amount);
+            echo "Saque via Caixa Eletronico realizado com sucesso!\nSaldo Atual: R$ {$this->getBalance()}";
+        }else{
+            echo "Saldo insuficiente!\nSaldo Atual: R$ {$this->getBalance()}";
+        }
     }
 }
 
-$pixWithdrawal = new PixWithdrawal;
-$pixWithdrawal->withdrawal(520.35);
-echo PHP_EOL;
+$pixWithdrawal1 = new PixWithdrawal;
 
-$atmWithdrawal = new Atmwithdrawal;
-$atmWithdrawal->withdrawal(250.0);
 
