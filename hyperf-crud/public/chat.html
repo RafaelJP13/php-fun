@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Hyperf</title>
+</head>
+
+<body>
+
+    <h1>Chat Hyperf</h1>
+
+    <input id="message" type="text" placeholder="Digite uma mensagem">
+    <button onclick="sendMessage()">Enviar</button>
+
+    <pre id="messages"></pre>
+
+    <script>
+        const messages = document.getElementById('messages');
+
+        const socket = new WebSocket('ws://localhost:9502/ws');
+
+        socket.onopen = () => {
+            messages.textContent += 'Conectado!\n';
+        };
+
+        socket.onmessage = (event) => {
+            messages.textContent += event.data + '\n';
+        };
+
+        socket.onclose = () => {
+            messages.textContent += 'Desconectado.\n';
+        };
+
+        function sendMessage() {
+            const input = document.getElementById('message');
+
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(input.value);
+                input.value = '';
+            }
+        }
+    </script>
+
+</body>
+
+</html>

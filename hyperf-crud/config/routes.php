@@ -13,6 +13,9 @@ use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\ChatController@index');
 
+Router::addServer('websocket', function () {
+    Router::get('/ws', \App\WebSocket\ChatHandler::class);
+});
 Router::get('/favicon.ico', function () {
     return '';
 });
